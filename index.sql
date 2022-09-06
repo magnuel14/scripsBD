@@ -231,6 +231,19 @@ desc convenio;
 SELECT * FROM convenio;
 desc factura;
 SELECT * FROM factura;
+--Tablas de vistas
+desc ST_recuperacion;
+SELECT * FROM ST_recuperacion;
+desc list_empleados;
+SELECT * FROM list_empleados;
+desc ser_recuperacion;
+SELECT * FROM ser_recuperacion;
+--Tablas de triggers
+desc Historial;
+SELECT * FROM Historial;
+desc notificacion;
+SELECT * FROM notificacion;  
+
 --Consultas relacionando tablas 
 SELECT factura.id_empleado,factura.detalle, factura.abono,empleado.nombre,empleado.apellido
 from factura
@@ -244,12 +257,14 @@ GROUP BY id_servicio HAVING COUNT(*)>1;
 --Creacion de la vista
 drop view ser_recuperacion;
 Create view ser_recuperacion AS
-SELECT convenio.id_servicio, servicio.tipo_servicio,servicio.nombre_institucion, COUNT(*) FROM convenio INNER JOIN servicio ON convenio.id_servicio= servicio.id_servicio 
+SELECT convenio.id_servicio, servicio.tipo_servicio,servicio.nombre_institucion, 
+COUNT(*) FROM convenio INNER JOIN servicio ON convenio.id_servicio= servicio.id_servicio 
 GROUP BY convenio.id_servicio HAVING COUNT(*)>1;
 
 
 Create view ser_recuperacion AS
-SELECT servicio.tipo_servicio,servicio.nombre_institucion, COUNT(*) FROM convenio INNER JOIN servicio ON convenio.id_servicio= servicio.id_servicio 
+SELECT servicio.tipo_servicio,servicio.nombre_institucion, COUNT(*) 
+FROM convenio INNER JOIN servicio ON convenio.id_servicio= servicio.id_servicio 
 GROUP BY convenio.id_servicio HAVING COUNT(*)>1;
 
 select * from ser_recuperacion;
@@ -310,7 +325,8 @@ SELECT * from list_empleados;
 --***********************************************************
 --trigger  historial
 --Crear la tabla Historiales
-create table Historial (id_historial int primary key auto_increment, accion_realizada varchar(250), id_factura int, fecha timestamp default now());
+create table Historial (id_historial int primary key auto_increment, accion_realizada varchar(250), 
+id_factura int, fecha timestamp default now());
 
 --Trigger para historial
 drop trigger historial_movimiento;
@@ -329,7 +345,8 @@ insert into factura ...
 select * from historial;
 --***********************************************************
 --Crear la tabla notificacion
-create table notificacion (id_notificacion int primary key auto_increment, mensaje varchar(250), id_factura int, fecha timestamp default now());
+create table notificacion (id_notificacion int primary key auto_increment, mensaje varchar(250), 
+id_factura int, fecha timestamp default now());
 
 -- trigger notifcacion
 drop trigger T_notifcacion;
@@ -341,7 +358,10 @@ FOR EACH ROW
     values(0,'Usted ha generado una nueva factura,Se le enviara al cliente una notificacion: ', NEW.id_factura, now());
 //
 delimiter ;
-
+--Comprobar
+insert into factura ...
+--Se debe disparar el triger y luego consultar la tabla
+select * from T_notifcacion;
 
 --***********************************************************
 --Procedimiento almacenado para calcular el recargo
@@ -356,6 +376,7 @@ SELECT detalle, (abono*0.10) recargo FROM factura WHERE fecha_pago > fecha_venci
 END 
 //
 delimiter ;
+--probar procedimiento
 call cal_recargo();
 --***********************************************************
 
